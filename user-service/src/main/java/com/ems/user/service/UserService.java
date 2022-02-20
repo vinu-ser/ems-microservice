@@ -3,6 +3,7 @@ package com.ems.user.service;
 import com.ems.user.VO.Department;
 import com.ems.user.VO.ResponseTemplateVO;
 import com.ems.user.entity.User;
+import com.ems.user.feign.DepartmentClient;
 import com.ems.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class UserService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    DepartmentClient departmentClient;
+
     public User saveUser(User user) {
         log.info("Inside saveUser of UserService");
         return userRepository.save(user);
@@ -29,9 +33,10 @@ public class UserService {
         ResponseTemplateVO vo = new ResponseTemplateVO();
         User user = userRepository.findByUserId(userId);
 
-        Department department =
+        /*Department department =
                 restTemplate.getForObject("http://DEPARTMENT-SERVICE/departments/" + user.getDepartmentId()
-                        ,Department.class);
+                        ,Department.class);*/
+        Department department = departmentClient.getById(userId);
 
         vo.setUser(user);
         vo.setDepartment(department);
